@@ -36,7 +36,7 @@ codegen and a clean build.
 ## Runtime
 
 ### 2026-09-14: first launches
-- Boots, starts audio and compiles shaders.
+- Boots, starts audio and compiles shaders; played successfully in a later session.
 - First launch: `Unhandled guest access violation: read of guest 0x00000020`
   about 35 seconds in, on the thread that initialised audio.
 - Second launch with `--log_level=debug` ran past that point without crashing,

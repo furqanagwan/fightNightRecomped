@@ -7,9 +7,9 @@ code and no extracted artwork.
 
 | Game | Folder | Status |
 | --- | --- | --- |
-| Fight Night Round 4 (USA/Europe, 45410894) | `fightNight4/` | In progress |
+| Fight Night Round 4 (USA/Europe, 45410894) | `fightNight4/` | Boots and plays; one timing-dependent crash seen once |
+| Fight Night Champion (USA/Europe, 45410915) | `fightNightChampion/` | Boots and runs, not yet played |
 | Fight Night Round 3 | `fightNight3/` | Not started |
-| Fight Night Champion | `fightNightChampion/` | Not started |
 
 ## Repository layout
 
@@ -24,7 +24,7 @@ common/                     recomp_common library shared by all games
   include/recomp/ui         DiscInstallDialog, SystemMenuDialog, SettingsDialog, MonochromeTheme
   include/recomp/debug      GuestImageDump
   src/kernel                Kernel stubs every game shares (Xbox Live Vision camera)
-fightNight4/                One folder per game: descriptor, codegen config, settings, GDK and UWP metadata
+fightNight4/, fightNightChampion/  One folder per game: descriptor, codegen config, settings, GDK and UWP metadata
 templates/game/             Starting point for the next game
 scripts/                    build, packaging, artwork, new game, analysis tools
 thirdparty/rexglue-sdk      ReXGlue fork with the fixes these games need
@@ -102,7 +102,9 @@ stand-ins for personal testing only.
    split functions (recorded in `config/disabled_function_seeds.txt`).
 2. Dump the loaded image with `RECOMP_DUMP_IMAGE=<GAME>/out/image_dump.bin`,
    then `python scripts/analysis/find_missing_functions.py --game <GAME> --write`
-   and again with `--gaps`, and repeat step 1.
+   and again with `--gaps`. Run
+   `python scripts/analysis/prune_bad_seeds.py --game <GAME> --image <dump>` to drop
+   gap seeds that split loops (codegen cannot detect those), then repeat step 1.
 3. Missing kernel imports at link time become stubs in `common/src/kernel` when
    shared, otherwise in the game's `src/kernel`.
 4. Artwork: `rexglue init ... achievements assets\default.xex metadata`, upscale
