@@ -2,13 +2,14 @@
 
 Native PC static recompilations of EA's Fight Night games for Xbox 360, built on
 [ReXGlue](https://github.com/rexglue/rexglue-sdk). Every game is recompiled from
-the player's own disc image; this repository contains no game data, no generated
-code and no extracted artwork.
+the player's own disc image; this repository contains no game data and no
+generated code. The only artwork committed is each game's HD title icon
+(`<GAME>/docs/icon.png`), shown in that game's README.
 
 | Game | Folder | Status |
 | --- | --- | --- |
-| Fight Night Round 4 (USA/Europe, 45410894) | `fightNight4/` | Boots and plays; one timing-dependent crash seen once |
-| Fight Night Champion (USA/Europe, 45410915) | `fightNightChampion/` | Boots and runs, not yet played |
+| [Fight Night Round 4](fightNight4/README.md) (USA/Europe, 45410894) | `fightNight4/` | Boots and plays; one timing-dependent crash seen once |
+| [Fight Night Champion](fightNightChampion/README.md) (USA/Europe, 45410915) | `fightNightChampion/` | Boots and runs, not yet played |
 | Fight Night Round 3 | `fightNight3/` | Not started |
 
 ## Repository layout
@@ -63,6 +64,19 @@ If `default.xex` is missing, the game opens a setup window to pick your Xbox 360
 ISO; the files are extracted once. Unattended installs:
 `RECOMP_INSTALL_ISO=/path/to/game.iso`.
 
+## DLC
+
+Put downloadable content packages (the `CON`, `LIVE` or `PIRS` files from an
+Xbox 360 `Content\0000000000000000\<TitleID>\00000002` folder) in the `dlc`
+folder next to the executable, or in `<user data>/dlc` when that folder is not
+writable. Each package is checked against the game's title ID and installed
+into the user data folder on the next start; already installed packages are
+skipped. Unattended installs: `RECOMP_INSTALL_DLC=/path/to/package-or-folder`.
+The Settings > Game files page shows the folder.
+
+Title updates (content type `000B0000`) are skipped: they replace game code, so
+they need a recompile from the updated `default.xex`.
+
 ## Controls
 
 - Xbox, PlayStation, Switch and Steam Deck controllers work through SDL; all
@@ -109,9 +123,10 @@ stand-ins for personal testing only.
    shared, otherwise in the game's `src/kernel`.
 4. Artwork: `rexglue init ... achievements assets\default.xex metadata`, upscale
    `metadata/icons/title.png` to `metadata/gdk_hd/title_1024.png`, then
-   `scripts/generate_artwork.ps1`.
+   `scripts/generate_artwork.ps1`. Copy the result to `<GAME>/docs/icon.png`
+   and show it at the top of the game's `README.md`.
 
-Per-game research notes live in `<GAME>/docs/NOTES.md`.
+Each game has a `<GAME>/README.md`; research notes live in `<GAME>/docs/NOTES.md`.
 
 ## Legal
 
