@@ -15,10 +15,10 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "CompanyName", "Electronic Arts"
-            VALUE "FileDescription", "Fight Night Champion"
+            VALUE "CompanyName", "Unofficial recompilation"
+            VALUE "FileDescription", "Fight Night Champion (unofficial native PC recompilation)"
             VALUE "ProductName", "Fight Night Champion"
-            VALUE "LegalCopyright", "(c) 2011 Electronic Arts Inc."
+            VALUE "LegalCopyright", "Fight Night Champion (c) 2011 Electronic Arts. Not affiliated with or endorsed by Electronic Arts."
             VALUE "InternalName", "fight_night_champion"
             VALUE "OriginalFilename", "Fight Night Champion.exe"
             VALUE "FileVersion", "1.0.0.0"

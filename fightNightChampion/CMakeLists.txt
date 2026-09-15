@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(generated/rexglue.cmake)
-include(../cmake/Recomp.cmake)
+include(../framework/cmake/Recomp.cmake)
 
 recomp_add_game(fight_night_champion
     OUTPUT_NAME "Fight Night Champion"

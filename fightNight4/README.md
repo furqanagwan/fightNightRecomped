@@ -55,13 +55,38 @@ Region list from [Redump](http://redump.org/discs/system/xbox360/).
 | Xbox PC app, UWP builds | Configured, not yet tested |
 | Linux, macOS, Steam Deck | Builds expected, not play-tested |
 
-## Getting started
+## Play
 
-1. Build from the repository root:
-   `.\scripts\build.ps1 -Game fightNight4` or `./scripts/build.sh fightNight4`.
-2. Launch `Fight Night Round 4`. On first run choose your Xbox 360 ISO; the
-   files are extracted once.
+1. Download `FightNightRound4-v<version>-windows-x64.zip` from
+   [Releases](https://github.com/furqanagwan/fightNightRecomped/releases?q=fightNight4)
+   and extract it to a folder you can write to.
+2. Run `Fight Night Round 4.exe` and choose your Xbox 360 ISO (USA/Europe disc,
+   see [Regions](#regions)); the files are copied once.
 3. Open the system menu with **View + Menu** (or **Esc**) for Settings and Exit.
+
+## System requirements
+
+| | Required |
+| --- | --- |
+| OS | Windows 10 version 2004 (build 19041) or Windows 11, 64-bit |
+| Processor | 64-bit x86 CPU with SSE4.1 |
+| Graphics | DirectX 12 GPU (feature level 11_0) |
+| Memory | 8 GB RAM recommended |
+| Storage | 4.5 GB, plus room for the ISO while it is copied |
+| Software | [Microsoft Visual C++ Redistributable 2015-2022 (x64)](https://aka.ms/vs/17/release/vc_redist.x64.exe) |
+| Game | Your own Fight Night Round 4 (USA, Europe) Xbox 360 disc image |
+
+Tested on an Intel Core Ultra 9 275HX, GeForce RTX 5080 Laptop GPU and 32 GB RAM
+(Windows 11).
+
+## Build from source
+
+```
+rexglue extract "<your disc>.iso" fightNight4\assets
+.\framework\scripts\build.ps1 -Game fightNight4
+```
+
+Setup is described in [CONTRIBUTING.md](../CONTRIBUTING.md).
 
 ## Default settings
 
@@ -75,7 +100,7 @@ Whether this game needs each of them has not been tested separately.
 | --- | --- |
 | Function seeds | 521 in `config/functions.toml` |
 | Disabled seeds | 85 in `config/disabled_function_seeds.txt` (they split functions or loops) |
-| Kernel stubs | Xbox Live Vision camera, shared from `common/src/kernel` |
+| Kernel stubs | Xbox Live Vision camera, shared from `framework/common/src/kernel` |
 | Known codegen warnings | Four functions exceed `max_file_size_bytes`; they compile |
 
 The full log of what was found and fixed is in [docs/NOTES.md](docs/NOTES.md).
@@ -83,9 +108,9 @@ The full log of what was found and fixed is in [docs/NOTES.md](docs/NOTES.md).
 ## Xbox Developer Mode (UWP)
 
 ```powershell
-.\scripts\build.ps1 -Game fightNight4 -Preset win-amd64-uwp-release
-.\scripts\package_uwp.ps1 -Game fightNight4 -Register
-.\scripts\package_uwp.ps1 -Game fightNight4 -Pack
+.\framework\scripts\build.ps1 -Game fightNight4 -Preset win-amd64-uwp-release
+.\framework\scripts\package_uwp.ps1 -Game fightNight4 -Register
+.\framework\scripts\package_uwp.ps1 -Game fightNight4 -Pack
 ```
 
 ## Artwork
@@ -97,7 +122,7 @@ To regenerate the exe icon and Xbox app images locally:
 2. Upscale `metadata/icons/title.png` 4x twice with Real-ESRGAN
    (`realesrgan-x4plus`) to `metadata/gdk_hd/title_1024.png`, or copy
    `docs/icon.png` there.
-3. `.\scripts\generate_artwork.ps1 -Game fightNight4 -ProjectName fight_night_round_4`
+3. `.\framework\scripts\generate_artwork.ps1 -Game fightNight4 -ProjectName fight_night_round_4`
 
 ## Legal
 

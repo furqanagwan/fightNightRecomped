@@ -1,135 +1,98 @@
 # fightNightRecomped
 
-Native PC static recompilations of EA's Fight Night games for Xbox 360, built on
-[ReXGlue](https://github.com/rexglue/rexglue-sdk). Every game is recompiled from
-the player's own disc image; this repository contains no game data and no
-generated code. The only artwork committed is each game's HD title icon
-(`<GAME>/docs/icon.png`), shown in that game's README.
+Unofficial native PC versions of EA's Fight Night games for Xbox 360, made by
+statically recompiling the original game code with
+[ReXGlue](https://github.com/rexglue/rexglue-sdk). Download the game's
+executable, point it at your own Xbox 360 disc image, and play.
 
-| Game | Folder | Status |
-| --- | --- | --- |
-| [Fight Night Round 4](fightNight4/README.md) (USA/Europe, 45410894) | `fightNight4/` | Boots and plays; one timing-dependent crash seen once |
-| [Fight Night Champion](fightNightChampion/README.md) (USA/Europe, 45410915) | `fightNightChampion/` | Boots and runs, not yet played |
-| Fight Night Round 3 | `fightNight3/` | Not started |
+This repository and its releases contain no game data: no disc images, game
+files or extracted assets. You must own the game.
 
-## Repository layout
+| Game | Supported disc | Status | Download |
+| --- | --- | --- | --- |
+| [Fight Night Round 4](fightNight4/README.md) | 🇺🇸 🇪🇺 USA, Europe (`45410894`) | Boots and plays; one timing-dependent crash seen once | [Releases](https://github.com/furqanagwan/fightNightRecomped/releases?q=fightNight4) |
+| [Fight Night Champion](fightNightChampion/README.md) | 🇺🇸 🇪🇺 USA, Europe (`45410915`) | Boots and runs, not yet played | [Releases](https://github.com/furqanagwan/fightNightRecomped/releases?q=fightNightChampion) |
+| Fight Night Round 3 | | Not started | |
 
-```
-cmake/Recomp.cmake          recomp_add_game(): shared build setup for every game
-common/                     recomp_common library shared by all games
-  include/recomp/app        GameRecompApp base class, GameDescriptor, GamePaths
-  include/recomp/installer  DiscImageInstaller (Xbox 360 ISO extraction)
-  include/recomp/input      ControllerMenuWatcher, GuestInputGate, ImGuiGamepadBridge
-  include/recomp/platform   NativeFilePicker, GamingRuntimeSession (Xbox PC app)
-  include/recomp/settings   UserSettingsStore
-  include/recomp/ui         DiscInstallDialog, SystemMenuDialog, SettingsDialog, MonochromeTheme
-  include/recomp/debug      GuestImageDump
-  src/kernel                Kernel stubs every game shares (Xbox Live Vision camera)
-fightNight4/, fightNightChampion/  One folder per game: descriptor, codegen config, settings, GDK and UWP metadata
-templates/game/             Starting point for the next game
-scripts/                    build, packaging, artwork, new game, analysis tools
-thirdparty/rexglue-sdk      ReXGlue fork with the fixes these games need
-```
+## Playing
 
-The framework is shared with
-[liveRecomped](https://github.com/furqanagwan/liveRecomped) (NBA LIVE) under
-neutral names, so both can later move to one common submodule.
+1. Check the [system requirements](#system-requirements) and install the
+   [Microsoft Visual C++ Redistributable (x64)](https://aka.ms/vs/17/release/vc_redist.x64.exe).
+2. Download the game's zip from [Releases](https://github.com/furqanagwan/fightNightRecomped/releases)
+   and extract it to a folder you can write to (not Program Files).
+3. Run the game's `.exe` and choose your Xbox 360 ISO when asked. The files are
+   copied next to the executable once; the ISO isn't needed after that.
 
-## Requirements
+Check your disc against the game's supported regions first (see its README):
+each release is recompiled from one regional executable.
 
-- CMake 3.25+, Ninja, Clang 18+ (Clang 20 on Linux)
-- ReXGlue SDK: the `thirdparty/rexglue-sdk` submodule (branch `fixes`),
-  either installed (`CMAKE_PREFIX_PATH`) or passed as `REXSDK_DIR`
-- Windows: Visual Studio build tools and the Windows SDK; optional Microsoft GDK
-  for Xbox PC app integration
-- Linux / Steam Deck: Vulkan and GTK development packages as listed in the ReXGlue README
+### Controls
 
-```
-git clone --recursive https://github.com/furqanagwan/fightNightRecomped.git
-```
-
-## Building
-
-Extract your disc into the game's `assets` folder (or let the game's first-run
-installer do it), then:
-
-```
-.\scripts\build.ps1 -Game fightNight4
-./scripts/build.sh fightNight4
-```
-
-## First run
-
-If `default.xex` is missing, the game opens a setup window to pick your Xbox 360
-ISO; the files are extracted once. Unattended installs:
-`RECOMP_INSTALL_ISO=/path/to/game.iso`.
-
-## DLC
-
-Put downloadable content packages (the `CON`, `LIVE` or `PIRS` files from an
-Xbox 360 `Content\0000000000000000\<TitleID>\00000002` folder) in the `dlc`
-folder next to the executable, or in `<user data>/dlc` when that folder is not
-writable. Each package is checked against the game's title ID and installed
-into the user data folder on the next start; already installed packages are
-skipped. Unattended installs: `RECOMP_INSTALL_DLC=/path/to/package-or-folder`.
-The Settings > Game files page shows the folder.
-
-Title updates (content type `000B0000`) are skipped: they replace game code, so
-they need a recompile from the updated `default.xex`.
-
-## Controls
-
-- Xbox, PlayStation, Switch and Steam Deck controllers work through SDL; all
-  controllers drive player 1 unless `recomp_shared_controllers` is turned off.
+- Xbox, PlayStation, Switch and Steam Deck controllers work out of the box; all
+  controllers drive player 1 unless *All controllers control player 1* is turned
+  off in Settings.
 - System menu (Resume, Settings, Exit Game): press **View + Menu** together, or
   **Esc**. The Guide button is left to Windows Game Bar and Steam unless
   `guide_button = true`.
 
-## Settings
+### DLC
 
-Defaults live in `<GAME>/settings/<project>.toml` and are copied next to the
-executable; the in-game Settings menu saves overrides to `settings.toml` in the
-user data folder. New games start from the settings NBA LIVE needed (`rov` /
-`fsi` render target paths, no background pipeline creation, 60 Hz vsync).
+Put downloadable content packages (the `CON`, `LIVE` or `PIRS` files from an
+Xbox 360 `Content\0000000000000000\<TitleID>\00000002` folder) in the `dlc`
+folder next to the executable. Each package is checked against the game's title
+ID and installed on the next start. Title updates are skipped: they replace game
+code, so they need a new recompilation.
 
-## Xbox PC app and Xbox Developer Mode
+### Saves and settings
+
+Saves, settings and logs go to your user folder; Settings > Game files shows
+where. An empty `portable.txt` next to the executable keeps them beside it.
+
+## System requirements
+
+| | Required |
+| --- | --- |
+| OS | Windows 10 version 2004 (build 19041) or Windows 11, 64-bit |
+| Processor | 64-bit x86 CPU with SSE4.1 |
+| Graphics | DirectX 12 GPU (feature level 11_0) |
+| Memory | 8 GB RAM recommended |
+| Storage | Fight Night Round 4: 4.5 GB, Fight Night Champion: 5.5 GB, plus room for the ISO while it is copied |
+| Software | [Microsoft Visual C++ Redistributable 2015-2022 (x64)](https://aka.ms/vs/17/release/vc_redist.x64.exe) |
+| Game | Your own Xbox 360 disc image of a supported region |
+
+Tested on an Intel Core Ultra 9 275HX, NVIDIA GeForce RTX 5080 Laptop GPU and
+32 GB RAM running Windows 11. Lower-end hardware hasn't been tested yet; reports
+are welcome. Linux, macOS and Steam Deck builds compile but have no releases and
+haven't been play-tested.
+
+## Developing
+
+The shared app framework (installer, menus, input, packaging scripts) lives in
+[recomp-framework](https://github.com/furqanagwan/recomp-framework), included here
+as the `framework` submodule together with the ReXGlue fork.
 
 ```
-.\scripts\package_gdk.ps1 -Game fightNight4 -Pack -Install
-.\scripts\build.ps1 -Game fightNight4 -Preset win-amd64-uwp-release
-.\scripts\package_uwp.ps1 -Game fightNight4 -Register
-.\scripts\package_uwp.ps1 -Game fightNight4 -Pack
+git clone --recursive https://github.com/furqanagwan/fightNightRecomped.git
+cd fightNightRecomped
+rexglue extract "<your disc>.iso" fightNight4\assets
+.\framework\scripts\build.ps1 -Game fightNight4
 ```
 
-The UWP preset needs the UWP flavour of the SDK installed at `C:\ReXGlue-UWP`
-(`cmake --preset win-amd64-uwp` in the SDK). Package identities are local
-stand-ins for personal testing only.
-
-## Adding the next game
-
 ```
-.\scripts\new_game.ps1 -Folder fightNight3 -ProjectName fight_night_round_3 -DisplayName "Fight Night Round 3" -ReleaseYear 2006
+framework/                  recomp-framework submodule (with thirdparty/rexglue-sdk)
+fightNight4/                Fight Night Round 4: descriptor, codegen config, settings, GDK/UWP metadata
+fightNightChampion/         Fight Night Champion
+<GAME>/docs/NOTES.md        Research notes: codegen, crashes and fixes
+<GAME>/release.json         Supported disc and system requirements for release packaging
 ```
 
-1. `python scripts/analysis/stabilize_codegen.py --game <GAME>` runs codegen
-   until it is clean, seeding unresolved call targets and disabling seeds that
-   split functions (recorded in `config/disabled_function_seeds.txt`).
-2. Dump the loaded image with `RECOMP_DUMP_IMAGE=<GAME>/out/image_dump.bin`,
-   then `python scripts/analysis/find_missing_functions.py --game <GAME> --write`
-   and again with `--gaps`. Run
-   `python scripts/analysis/prune_bad_seeds.py --game <GAME> --image <dump>` to drop
-   gap seeds that split loops (codegen cannot detect those), then repeat step 1.
-3. Missing kernel imports at link time become stubs in `common/src/kernel` when
-   shared, otherwise in the game's `src/kernel`.
-4. Artwork: `rexglue init ... achievements assets\default.xex metadata`, upscale
-   `metadata/icons/title.png` to `metadata/gdk_hd/title_1024.png`, then
-   `scripts/generate_artwork.ps1`. Copy the result to `<GAME>/docs/icon.png`
-   and show it at the top of the game's `README.md`.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, adding Fight Night Round 3
+and making releases.
 
-Each game has a `<GAME>/README.md`; research notes live in `<GAME>/docs/NOTES.md`.
+## License
 
-## Legal
+The code in this repository is BSD 3-Clause, see [LICENSE](LICENSE).
 
 Not affiliated with or endorsed by Electronic Arts or Microsoft. Fight Night and
-EA SPORTS are trademarks of Electronic Arts. You must own the game; no
-copyrighted game content is distributed here.
+EA SPORTS are trademarks of Electronic Arts. Releases contain code recompiled
+from the original games but no game data; you must own the game to play.

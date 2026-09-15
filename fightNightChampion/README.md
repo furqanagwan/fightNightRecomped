@@ -55,14 +55,38 @@ Region list from [Redump](http://redump.org/discs/system/xbox360/).
 | Xbox PC app, UWP builds | Configured, not yet tested |
 | Linux, macOS, Steam Deck | Builds expected, not play-tested |
 
-## Getting started
+## Play
 
-1. Build from the repository root:
-   `.\scripts\build.ps1 -Game fightNightChampion` or
-   `./scripts/build.sh fightNightChampion`.
-2. Launch `Fight Night Champion`. On first run choose your Xbox 360 ISO; the
-   files are extracted once.
+1. Download `FightNightChampion-v<version>-windows-x64.zip` from
+   [Releases](https://github.com/furqanagwan/fightNightRecomped/releases?q=fightNightChampion)
+   and extract it to a folder you can write to.
+2. Run `Fight Night Champion.exe` and choose your Xbox 360 ISO (USA/Europe disc,
+   see [Regions](#regions)); the files are copied once.
 3. Open the system menu with **View + Menu** (or **Esc**) for Settings and Exit.
+
+## System requirements
+
+| | Required |
+| --- | --- |
+| OS | Windows 10 version 2004 (build 19041) or Windows 11, 64-bit |
+| Processor | 64-bit x86 CPU with SSE4.1 |
+| Graphics | DirectX 12 GPU (feature level 11_0) |
+| Memory | 8 GB RAM recommended |
+| Storage | 5.5 GB, plus room for the ISO while it is copied |
+| Software | [Microsoft Visual C++ Redistributable 2015-2022 (x64)](https://aka.ms/vs/17/release/vc_redist.x64.exe) |
+| Game | Your own Fight Night Champion (USA, Europe) Xbox 360 disc image |
+
+Tested on an Intel Core Ultra 9 275HX, GeForce RTX 5080 Laptop GPU and 32 GB RAM
+(Windows 11).
+
+## Build from source
+
+```
+rexglue extract "<your disc>.iso" fightNightChampion\assets
+.\framework\scripts\build.ps1 -Game fightNightChampion
+```
+
+Setup is described in [CONTRIBUTING.md](../CONTRIBUTING.md).
 
 ## Default settings
 
@@ -76,7 +100,7 @@ Whether this game needs each of them has not been tested separately.
 | --- | --- |
 | Function seeds | 1,367 in `config/functions.toml` |
 | Disabled seeds | 5 in `config/disabled_function_seeds.txt` (they split functions) |
-| Kernel stubs | Xbox Live Vision camera, shared from `common/src/kernel` |
+| Kernel stubs | Xbox Live Vision camera, shared from `framework/common/src/kernel` |
 | Known codegen warnings | One function exceeds `max_file_size_bytes`; it compiles |
 
 The full log of what was found and fixed is in [docs/NOTES.md](docs/NOTES.md).
@@ -84,9 +108,9 @@ The full log of what was found and fixed is in [docs/NOTES.md](docs/NOTES.md).
 ## Xbox Developer Mode (UWP)
 
 ```powershell
-.\scripts\build.ps1 -Game fightNightChampion -Preset win-amd64-uwp-release
-.\scripts\package_uwp.ps1 -Game fightNightChampion -Register
-.\scripts\package_uwp.ps1 -Game fightNightChampion -Pack
+.\framework\scripts\build.ps1 -Game fightNightChampion -Preset win-amd64-uwp-release
+.\framework\scripts\package_uwp.ps1 -Game fightNightChampion -Register
+.\framework\scripts\package_uwp.ps1 -Game fightNightChampion -Pack
 ```
 
 ## Artwork
@@ -99,7 +123,7 @@ To regenerate the exe icon and Xbox app images locally:
 
 1. `rexglue init --project-name fight_night_champion --xex-path assets\default.xex achievements assets\default.xex metadata`
 2. Copy `docs/icon.png` to `metadata/gdk_hd/title_1024.png`.
-3. `.\scripts\generate_artwork.ps1 -Game fightNightChampion -ProjectName fight_night_champion`
+3. `.\framework\scripts\generate_artwork.ps1 -Game fightNightChampion -ProjectName fight_night_champion`
 
 ## Legal
 
