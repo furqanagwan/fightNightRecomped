@@ -38,7 +38,7 @@ neutral names, so both can later move to one common submodule.
 ## Requirements
 
 - CMake 3.25+, Ninja, Clang 18+ (Clang 20 on Linux)
-- ReXGlue SDK: the `thirdparty/rexglue-sdk` submodule (branch `liverecomp-fixes`),
+- ReXGlue SDK: the `thirdparty/rexglue-sdk` submodule (branch `fixes`),
   either installed (`CMAKE_PREFIX_PATH`) or passed as `REXSDK_DIR`
 - Windows: Visual Studio build tools and the Windows SDK; optional Microsoft GDK
   for Xbox PC app integration
