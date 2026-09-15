@@ -6,11 +6,13 @@
 #include <rex/input/device_assignment.h>
 #include <rex/input/input_system.h>
 #include <rex/logging.h>
+#include <rex/system/kernel_state.h>
 #include <rex/ui/keybinds.h>
 #include <rex/ui/window.h>
 #include <rex/ui/windowed_app_context.h>
 
 #include "recomp/debug/guest_image_dump.h"
+#include "recomp/installer/content_package_installer.h"
 #include "recomp/installer/disc_image_installer.h"
 #include "recomp/settings/user_settings_store.h"
 #include "recomp/ui/disc_install_dialog.h"
@@ -26,6 +28,7 @@ namespace {
 
 constexpr const char* kSystemMenuBind = "bind_recomp_system_menu";
 constexpr const char* kUnattendedInstallVariable = "RECOMP_INSTALL_ISO";
+constexpr const char* kContentPackageVariable = "RECOMP_INSTALL_DLC";
 constexpr const char* kPrimaryGpuPlugin = "xenos";
 
 std::unique_ptr<rex::system::IInputSystem> CreateSharedControllerInput(bool tool_mode) {
@@ -105,6 +108,7 @@ std::optional<rex::PathConfig> GameRecompApp::OnFinalizePaths(const rex::PathCon
 
 void GameRecompApp::OnPostLoadXexImage() {
   GuestImageDump::WriteAndExitIfRequested(*runtime(), image_info_);
+  InstallContentPackages();
 }
 
 void GameRecompApp::OnPostSetup() {
@@ -126,6 +130,24 @@ bool GameRecompApp::InstallFromEnvironment(const std::filesystem::path& game_roo
   }
   REXLOG_ERROR("Unattended install failed: {}", installer.error());
   return false;
+}
+
+void GameRecompApp::InstallContentPackages() {
+  auto* kernel_state = runtime()->kernel_state();
+  if (!kernel_state || !kernel_state->content_manager()) {
+    return;
+  }
+  ContentPackageInstaller installer(*kernel_state->content_manager(), kernel_state->title_id());
+  const auto dlc_folder = paths_.dlc_folder();
+  std::error_code error;
+  std::filesystem::create_directories(dlc_folder, error);
+  int installed = installer.InstallFrom(dlc_folder);
+  if (const char* source = std::getenv(kContentPackageVariable)) {
+    installed += installer.InstallFrom(source);
+  }
+  if (installed > 0) {
+    REXLOG_INFO("DLC: installed {} package(s)", installed);
+  }
 }
 
 void GameRecompApp::ToggleSystemMenu() {
@@ -165,6 +187,7 @@ void GameRecompApp::OpenSettings() {
                           .settings_file = paths_.settings_file(),
                           .game_data_root = game_data_root_,
                           .user_data_root = paths_.user_data_root(),
+                          .dlc_folder = paths_.dlc_folder(),
                           .portable = paths_.portable(),
                           .apply_fullscreen =
                               [this](bool fullscreen) {
